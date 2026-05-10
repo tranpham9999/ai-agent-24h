@@ -1,0 +1,8 @@
+.env
+agent.db
+__pycache__
+.git
+.claude
+docs
+*.md
+.DS_Store

@@ -1,0 +1,35 @@
+[project]
+name = "ai-agent-24-7"
+version = "0.1.0"
+description = "AI Agent 24/7 — automated briefing agent on Azure"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "openai>=1.60.0",
+    "pydantic-settings>=2.7.0",
+    "apscheduler>=3.10.0",
+    "httpx>=0.28.0",
+    "aiosqlite>=0.20.0",
+    "python-dotenv>=1.0.0",
+    "ddgs>=1.0.0",
+    "lxml>=5.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.28.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
