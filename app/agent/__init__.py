@@ -60,14 +60,14 @@ class AgentCore:
             model=self._model,
             messages=messages,
             tools=self._registry.list_openai_specs(),
-            tool_choice="auto",
+            tool_choice="required",
         )
 
         message = response.choices[0].message
 
         # If LLM didn't call any tool, return its text directly
         if not message.tool_calls:
-            final_text = message.content or ""
+            final_text = message.content or "Xin lỗi, tôi không thể xử lý yêu cầu này ngay bây giờ."
             await self._save_conversation(platform_context, user_input, final_text)
             await self._auto_reply(platform_context, final_text)
             return final_text
@@ -83,6 +83,22 @@ class AgentCore:
         # Append each result
         for result in tool_results:
             messages.append(result)
+
+        # Short-circuit: if the only tool was 'respond', extract message and skip synthesis
+        respond_only = (
+            len(message.tool_calls) == 1
+            and message.tool_calls[0].function.name == "respond"
+        )
+        if respond_only:
+            raw_args = message.tool_calls[0].function.arguments
+            try:
+                kwargs = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
+            except json.JSONDecodeError:
+                kwargs = {}
+            final_text = kwargs.get("message", "") or ""
+            await self._save_conversation(platform_context, user_input, final_text)
+            await self._auto_reply(platform_context, final_text)
+            return final_text
 
         # Final LLM call to synthesize
         final = await self._openai.chat.completions.create(
