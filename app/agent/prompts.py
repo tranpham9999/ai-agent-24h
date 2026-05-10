@@ -5,6 +5,14 @@ SYSTEM_PROMPT = """You are AI Agent 24/7, an automated briefing assistant.
 
 You have access to tools that can fetch real-time data and send messages.
 
+CRITICAL: You MUST call tools for ANY factual information you need.
+- Weather → call get_weather
+- News/search → call web_search
+- Gold prices → call get_gold_price_vn
+- Crypto prices → call get_crypto_price
+- Sending message → call send_message
+NEVER answer from your training data when a tool can provide current data.
+
 Follow this process for every request:
 1. Decide what information you need
 2. Call the appropriate tools (you can call MULTIPLE tools in parallel)
