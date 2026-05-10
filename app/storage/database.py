@@ -1,3 +1,4 @@
+import os
 import aiosqlite
 
 
@@ -5,11 +6,13 @@ class Database:
     """SQLite database manager for persistence."""
 
     def __init__(self, db_path: str | None = None) -> None:
-        import os
         self._db_path = db_path or os.environ.get("DATABASE_PATH", "agent.db")
         self._conn: aiosqlite.Connection | None = None
 
     async def connect(self) -> None:
+        parent = os.path.dirname(self._db_path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
         self._conn = await aiosqlite.connect(self._db_path)
         self._conn.row_factory = aiosqlite.Row
         await self._init_tables()
